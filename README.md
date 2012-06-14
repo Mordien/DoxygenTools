@@ -19,4 +19,28 @@ To create the installation file you need NSIS available from (http://nsis.source
 Usage
 -----
 
-Go to the NSIS folder. Select the file DoxygenTools.nsi, right click and choose Compile NSIS Script. This will create the DoxygenTools installer. 
+Go to the NSIS folder. Select the file _DoxygenTools.nsi_, right click and choose _Compile NSIS Script_. This will create the DoxygenTools installer. 
+
+If you are using other versions of the Doxygen applications, make sure that you have the right names of the exe-files in 
+_DoxygenTools.nsi_.
+
+Installation
+------------
+
+You can install DoxygenTools in two ways.
+
+1. Double click on the file DoxygenTools.exe and follow the instructions.
+2. Start the DoxygenTools.exe from the command prompt. When doing this you can use option __/S__ for silent installation and 
+   option __/D__ to change installation folder.
+
+Example. _"DoxygenTools.exe /S /D=C:\Doxygen\Installation"_
+
+There is a couple of things to consider. One is that even if MikTex has the option __--unattended__ to make a silent installation
+it will still show a progress window. This is true even if we use the __/D__ option to install DoxygenTools silently.
+
+Another thing is that MikTex can not be uninstalled through the DoxygenTools uninstaller. The only way to uninstall MikTex
+is to remove it from Control Panel->Add/Remove program.
+
+A third thing is that the installation folder is the folder where the uninstaller file for the DoxygenTools will be placed. The other applications in the
+installer will be installed in the same default folders as if you should installe them manually.
+
