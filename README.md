@@ -14,14 +14,14 @@ Installs
 Requirements
 ------------
 
-To create the installation file you need NSIS available from (http://nsis.sourceforge.net/Main_Page). Install NSIS on your computer.
+To create the installation file you need to install __NSIS__ available from (http://nsis.sourceforge.net/Main_Page).
 
 Usage
 -----
 
 Go to the NSIS folder. Select the file _DoxygenTools.nsi_, right click and choose _Compile NSIS Script_. This will create the DoxygenTools installer. 
 
-If you are using other versions of the Doxygen applications, make sure that you have the right names of the exe-files in 
+If you are using other versions of the Doxygen applications, make sure that you have the right name of the exe-files in 
 _DoxygenTools.nsi_.
 
 Installation
