@@ -14,4 +14,9 @@ Installs
 Requirements
 ------------
 
-To create the installation file you need NSIS from Nullsoft. Available from (http://nsis.sourceforge.net/Main_Page).
+To create the installation file you need NSIS available from (http://nsis.sourceforge.net/Main_Page). Install NSIS on your computer.
+
+Usage
+-----
+
+Go to the NSIS folder. Select the file DoxygenTools.nsi, right click and choose Compile NSIS Script. This will create the DoxygenTools installer. 
