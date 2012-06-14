@@ -186,7 +186,7 @@ Section "${PRODUCT} main application" SecCopyUI
   Delete "$INSTDIR\gs905w32.exe"
   
   ;Set environment variable.
-  ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "C:\Program Files\gs\gs9.05\bin"
+  ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$PROGRAMFILES\gs\gs9.05\bin"
  
   ;Graphviz
   File "..\Installation\graphviz-2.28.0.msi"
@@ -222,6 +222,7 @@ Section "Uninstall"
   ;Remove Doxygen.
   ExecWait '"$PROGRAMFILES\Doxygen\System\unins000.exe" /VERYSILENT'
   Sleep 1000
+  RMDir "$PROGRAMFILES\Doxygen"
   
   ;Remove Ghostscript.
   ExecWait '"$PROGRAMFILES\gs\gs9.05\uninstgs.exe" /S'
