@@ -175,7 +175,7 @@ Section "${PRODUCT} main application" SecCopyUI
   ;MikTex. Displays a progress window during installation.
   ;Can only delete the installation from Control Panel-Add/Remowe program.
   File "..\Installation\basic-miktex-2.9.4407.exe"
-  ExecWait '"basic-miktex-2.9.4407.exe" --unattended'
+  ExecWait '"basic-miktex-2.9.4407.exe" --unattended --private'
   Sleep 1000  
   Delete "$INSTDIR\basic-miktex-2.9.4407.exe"
   
