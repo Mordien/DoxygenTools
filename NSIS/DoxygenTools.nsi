@@ -1,5 +1,5 @@
 
-;#####################################################################################
+;############################################################################################
 ;
 ; Doxygen Tools Script written in NSIS
 ;
@@ -10,10 +10,10 @@
 ;	* Mscgen
 ;	* GhostScript
 ;
-; Make sure that if you want to install new versions of the
-; applications mentioned above, then you must make sure that
-; the right names of the executable  files are used in the installation code below.
-;#####################################################################################
+; Make sure that if you want to install new versions of the applications mentioned above, 
+; then you must make sure that the right names of the executable  files are used in the 
+; installation code below.
+;############################################################################################
 !include "MUI.nsh"
 !include "EnvVarUpdate.nsh"
 
