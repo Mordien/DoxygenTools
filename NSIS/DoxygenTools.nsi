@@ -89,7 +89,7 @@ XPSTYLE on
   ;--------------------------------
   ;Folder-selection page
   ;--------------------------------
-  InstallDir "$PROGRAMFILES\${PRODUCT}"
+  ;InstallDir "$INSTDIR\${PRODUCT}"
 
 
 ;-------------------------------------------
@@ -104,9 +104,8 @@ Function .onInit
   Push "${PRODUCT}"
   Call FindWindowClose
 
-  ReadRegStr $R0 HKLM \
-  "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}" \
-  "UninstallString"
+  ;Is there an uninstall entry in register. If so, DoxygenTools is already installed.
+  ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}" "UninstallString"
   StrCmp $R0 "" done
  
   MessageBox MB_OKCANCEL|MB_ICONINFORMATION \
@@ -158,59 +157,70 @@ Section "${PRODUCT} main application" SecCopyUI
 
  ;Write the uninstall keys for Windows for Add/Remove programs.
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}" "DisplayName" "${PRODUCT} (remove only)"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}" "UninstallString" "$INSTDIR\uninstall.exe"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}" "UninstallString" "$INSTDIR\DoxygenTools-uninstaller.exe"
   
-  SetOutPath "$INSTDIR"
+  SetOutPath "$INSTDIR"  
   
-  ;--------------------------------------
-  ;Put file there that should be included under the installation directory
-  ;--------------------------------------
+  ;------------------------------------------------------------------------
+  ;Put file here that should be included under the installation directory.
+  ;------------------------------------------------------------------------
   
+  ;----------
   ;Doxygen.
+  ;----------
   File "..\Installation\doxygen-1.8.1-setup.exe"
-  ExecWait '"doxygen-1.8.1-setup.exe" /VERYSILENT'
+  ExecWait '"doxygen-1.8.1-setup.exe" /VERYSILENT /DIR=$INSTDIR\doxygen'
   Sleep 1000
   Delete "$INSTDIR\doxygen-1.8.1-setup.exe"
   
-  ;MikTex. Displays a progress window during installation.
+  ;--------
+  ;MikTex. 
+  ;--------
+  ;Displays a progress window during installation.
   ;Can only delete the installation from Control Panel-Add/Remowe program.
   File "..\Installation\basic-miktex-2.9.4407.exe"
-  ExecWait '"basic-miktex-2.9.4407.exe" --unattended --private'
+  ExecWait '"basic-miktex-2.9.4407.exe" --user-config=$APPDATA\MiKTeX\2.9 --user-config=$APPDATA\MiKTeX\2.9 --user-install=$APPDATA\MiKTeX\2.9 --common-install=$INSTDIR\miktex --unattended'
   Sleep 1000  
   Delete "$INSTDIR\basic-miktex-2.9.4407.exe"
   
+  ;------------
   ;Ghostscript
+  ;------------
   File "..\Installation\gs905w32.exe"
-  ExecWait '"gs905w32.exe" /S'
+  ExecWait '"gs905w32.exe" /S /D=$INSTDIR\gs\gs9.05'
   Sleep 1000
   Delete "$INSTDIR\gs905w32.exe"
   
   ;Set environment variable.
-  ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$PROGRAMFILES\gs\gs9.05\bin"
+  ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\gs\gs9.05\bin"
  
+  ;----------
   ;Graphviz
+  ;----------
   File "..\Installation\graphviz-2.28.0.msi"
-  ExecWait '"msiexec" /i "graphviz-2.28.0.msi" /quiet' 
+  ExecWait '"msiexec" /i "graphviz-2.28.0.msi" TARGETDIR=$INSTDIR\graphviz /quiet' 
   Sleep 1000
-  Delete "$INSTDIR\graphviz-2.28.0.msi"
+  Delete "$INSTDIR\graphviz-2.28.0.msi" 
   
+  ;---------
   ;Mscgen.
+  ;---------
   File "..\Installation\mscgen_0.20.exe"
-  ExecWait '"mscgen_0.20.exe" /S'
+  ExecWait '"mscgen_0.20.exe" /S /D=$INSTDIR\mscgen'
   Sleep 1000
   Delete "$INSTDIR\mscgen_0.20.exe"
 
   ;Create menu shortcut for uninstall.
-  !insertmacro MUI_STARTMENU_WRITE_BEGIN "${PRODUCT}"  	
-	CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
-  	CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
+  ; !insertmacro MUI_STARTMENU_WRITE_BEGIN "${PRODUCT}"  	
+	; CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
+  	; CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
 	
-  	;Write shortcut location to the registry (for Uninstaller)
-  	WriteRegStr HKCU "Software\${PRODUCT}" "Start Menu Folder" "${INSTALL_NAME}"
-  !insertmacro MUI_STARTMENU_WRITE_END
+  	; ;Write shortcut location to the registry (for Uninstaller)
+  	; WriteRegStr HKCU "Software\${PRODUCT}" "Start Menu Folder" "${INSTALL_NAME}"
+  ; !insertmacro MUI_STARTMENU_WRITE_END
 
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\Uninstall.exe"
+  WriteUninstaller "$INSTDIR\DoxygenTools-uninstaller.exe"
 
 SectionEnd
 
@@ -219,30 +229,40 @@ SectionEnd
 ;--------------------------------
 Section "Uninstall"
 
+  ;-----------------
   ;Remove Doxygen.
-  ExecWait '"$PROGRAMFILES\Doxygen\System\unins000.exe" /VERYSILENT'
+  ;-----------------
+  ExecWait '"$INSTDIR\doxygen\system\unins000.exe" /VERYSILENT'
   Sleep 1000
-  RMDir "$PROGRAMFILES\Doxygen"
+  RMDir "$INSTDIR\doxygen"
   
+  ;---------------------
   ;Remove Ghostscript.
-  ExecWait '"$PROGRAMFILES\gs\gs9.05\uninstgs.exe" /S'
+  ;---------------------
+  ExecWait '"$INSTDIR\gs\gs9.05\uninstgs.exe" /S'
   Sleep 1000  
-  RMDir "$PROGRAMFILES\gs"
+  RMDir "$INSTDIR\gs"
   
   ;Remove Ghostscript environment variable.
-  ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "C:\Program Files\gs\gs9.05\bin"
+  ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\gs\gs9.05\bin"
   
   ;Can only remove MikTex from Control Panel with Add/Remove program.
+  ;ExecWait '"$INSTDIR\miktex\miktex\bin\internal\uninstall.exe"' 
+  ;Sleep 1000  
   
+  ;-----------------
   ;Remove Graphviz.
+  ;-----------------
   File "..\Installation\graphviz-2.28.0.msi"
-  ExecWait '"msiexec" /x "$INSTDIR\graphviz-2.28.0.msi" /quiet' 
+  ExecWait '"msiexec" /x "$INSTDIR\graphviz-2.28.0.msi" /quiet'   
   Sleep 1000  
   
+  ;----------------
   ;Remove Mscgen.
-  ExecWait '"$PROGRAMFILES\mscgen\uninstall.exe" /S'
+  ;----------------
+  ExecWait '"$INSTDIR\mscgen\uninstall.exe" /S'
   Sleep 1000  
-  RMDir "$PROGRAMFILES\mscgen"
+  RMDir "$INSTDIR\mscgen"
     
   ;Get shortcut location of the uninstaller.
   ReadRegStr ${TEMP1} HKCU "Software\${PRODUCT}" "Start Menu Folder"
@@ -251,8 +271,8 @@ Section "Uninstall"
   StrCmp ${TEMP1} "" noshortcuts
   
   ;Delete uninstaller.
-  Delete "$SMPROGRAMS\${TEMP1}\Uninstall.lnk"  
-  RMDir "$SMPROGRAMS\${TEMP1}" 
+  ;Delete "$SMPROGRAMS\${TEMP1}\Uninstall.lnk"  
+  ;RMDir "$SMPROGRAMS\${TEMP1}" 
   
   noshortcuts:
 
@@ -261,10 +281,12 @@ Section "Uninstall"
   RMDir "$INSTDIR"
 
   ;Remove registry keys for menu folder.
-  DeleteRegValue HKCU "Software\${PRODUCT}" "Start Menu Folder"
-  DeleteRegKey HKCU "SOFTWARE\${PRODUCT}"
+  ;DeleteRegValue HKCU "Software\${PRODUCT}" "Start Menu Folder"
+  ;DeleteRegKey HKCU "SOFTWARE\${PRODUCT}"
 
   ; Remove registry keys for Add/Remove program.
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}"
   DeleteRegKey HKLM "SOFTWARE\${PRODUCT}"
+
+   
 SectionEnd
